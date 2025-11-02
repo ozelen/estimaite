@@ -7,7 +7,7 @@ Usage:
 """
 
 from django.core.management.base import BaseCommand, CommandError
-
+from django.utils.text import slugify
 from users.models import Tenant
 
 
@@ -40,8 +40,6 @@ class Command(BaseCommand):
                 else None
             )
             if not slug:
-                from django.utils.text import slugify
-
                 slug = slugify(name)
 
         # Check if slug already exists
