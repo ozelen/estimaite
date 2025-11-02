@@ -4,6 +4,7 @@ from django.db import models
 
 class Tenant(models.Model):
     """Tenant/Organization model for multitenancy"""
+
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -25,6 +26,7 @@ class Tenant(models.Model):
 
 class Profile(models.Model):
     """User profile extending Django User with tenant relationship"""
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -60,20 +62,20 @@ class Profile(models.Model):
 # Manager for RLS-aware querysets
 class RLSQuerySet(models.QuerySet):
     """QuerySet that automatically filters by tenant_id from connection"""
-    
+
     def _filter_by_tenant(self):
         """Filter queryset by current tenant_id from PostgreSQL session"""
         # This will be enforced by RLS at the database level
         # But we can also add explicit filtering for Django ORM consistency
         return self
-    
+
     def get_queryset(self):
         return self._filter_by_tenant()
 
 
 class RLSManager(models.Manager):
     """Manager that ensures RLS-aware queries"""
-    
+
     def get_queryset(self):
         return RLSQuerySet(self.model, using=self._db)
 
@@ -81,15 +83,16 @@ class RLSManager(models.Manager):
 # Mixin for models that need RLS
 class RLSModel(models.Model):
     """Abstract base model for RLS-enabled models"""
+
     tenant = models.ForeignKey(
         Tenant,
         on_delete=models.CASCADE,
         db_index=True,
         help_text="Tenant/organization owning this record",
     )
-    
+
     objects = RLSManager()
-    
+
     class Meta:
         abstract = True
         indexes = [

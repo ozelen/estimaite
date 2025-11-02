@@ -2,109 +2,128 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Tenant, Profile
+from .models import Profile, Tenant
 
 
 class SignupForm(UserCreationForm):
     """Signup form that creates a user, tenant organization, and profile"""
+
     email = forms.EmailField(
-        required=True,
-        help_text="Required. Enter a valid email address."
+        required=True, help_text="Required. Enter a valid email address."
     )
-    
+
     # Tenant/Organization fields
     organization_name = forms.CharField(
         max_length=255,
         required=True,
         label="Organization Name",
-        help_text="Name of your organization/company"
+        help_text="Name of your organization/company",
     )
     organization_slug = forms.SlugField(
         required=False,
         label="Organization URL Slug",
-        help_text="Leave blank to auto-generate from organization name"
+        help_text="Leave blank to auto-generate from organization name",
     )
-    
+
     # Profile fields (optional)
-    phone_number = forms.CharField(
-        max_length=20,
-        required=False,
-        label="Phone Number"
-    )
+    phone_number = forms.CharField(max_length=20, required=False, label="Phone Number")
 
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2", "organization_name", "organization_slug", "phone_number")
+        fields = (
+            "username",
+            "email",
+            "password1",
+            "password2",
+            "organization_name",
+            "organization_slug",
+            "phone_number",
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Make email required
-        self.fields['email'].required = True
-        
+        self.fields["email"].required = True
+
         # Style the fields
-        self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Username'})
-        self.fields['email'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Email address'})
-        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Password'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm password'})
-        self.fields['organization_name'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Your Organization Name'})
-        self.fields['organization_slug'].widget.attrs.update({'class': 'form-control', 'placeholder': 'org-slug (optional)'})
-        self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Phone (optional)'})
+        self.fields["username"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Username"}
+        )
+        self.fields["email"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Email address"}
+        )
+        self.fields["password1"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Password"}
+        )
+        self.fields["password2"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Confirm password"}
+        )
+        self.fields["organization_name"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Your Organization Name"}
+        )
+        self.fields["organization_slug"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "org-slug (optional)"}
+        )
+        self.fields["phone_number"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Phone (optional)"}
+        )
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get("email")
         if email and User.objects.filter(email=email).exists():
             raise forms.ValidationError("A user with this email already exists.")
         return email
 
     def clean_organization_slug(self):
-        slug = self.cleaned_data.get('organization_slug')
-        organization_name = self.cleaned_data.get('organization_name')
-        
+        slug = self.cleaned_data.get("organization_slug")
+        organization_name = self.cleaned_data.get("organization_name")
+
         # Auto-generate slug if not provided
         if not slug and organization_name:
             from django.utils.text import slugify
+
             slug = slugify(organization_name)
-        
+
         # Check if slug already exists
         if slug and Tenant.objects.filter(slug=slug).exists():
-            raise forms.ValidationError(f"An organization with slug '{slug}' already exists. Please choose a different one.")
-        
+            raise forms.ValidationError(
+                f"An organization with slug '{slug}' already exists. Please choose a different one."
+            )
+
         return slug
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        
+        user.email = self.cleaned_data["email"]
+
         if commit:
             user.save()
-            
+
             # Create tenant/organization
-            organization_name = self.cleaned_data['organization_name']
-            organization_slug = self.cleaned_data['organization_slug']
-            
+            organization_name = self.cleaned_data["organization_name"]
+            organization_slug = self.cleaned_data["organization_slug"]
+
             if not organization_slug:
                 from django.utils.text import slugify
+
                 organization_slug = slugify(organization_name)
-            
+
             # Ensure slug is unique
             base_slug = organization_slug
             counter = 1
             while Tenant.objects.filter(slug=organization_slug).exists():
                 organization_slug = f"{base_slug}-{counter}"
                 counter += 1
-            
+
             tenant = Tenant.objects.create(
-                name=organization_name,
-                slug=organization_slug,
-                is_active=True
+                name=organization_name, slug=organization_slug, is_active=True
             )
-            
+
             # Create profile linking user to tenant
             Profile.objects.create(
                 user=user,
                 tenant=tenant,
-                phone_number=self.cleaned_data.get('phone_number', '')
+                phone_number=self.cleaned_data.get("phone_number", ""),
             )
-        
-        return user
 
+        return user

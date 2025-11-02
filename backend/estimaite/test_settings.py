@@ -3,7 +3,9 @@ Django test settings for estimaite project.
 
 This file extends the base settings for testing purposes.
 """
+
 import os
+
 from .settings import *
 
 # Use PostgreSQL for tests
@@ -53,4 +55,3 @@ DEBUG = False
 SECRET_KEY = "test-secret-key-not-for-production"
 
 ALLOWED_HOSTS = ["*"]
-

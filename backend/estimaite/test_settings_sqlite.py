@@ -3,6 +3,7 @@ Django test settings for estimaite project using SQLite.
 
 This file extends the base settings for faster local testing with SQLite.
 """
+
 from .settings import *
 
 # Use SQLite for faster tests (no Docker required)
@@ -36,4 +37,3 @@ DEBUG = False
 SECRET_KEY = "test-secret-key-not-for-production"
 
 ALLOWED_HOSTS = ["*"]
-

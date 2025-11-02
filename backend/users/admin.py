@@ -13,39 +13,38 @@ class TenantAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ["created_at", "updated_at"]
     fieldsets = (
-        ("Basic Information", {
-            "fields": ("name", "slug", "is_active")
-        }),
-        ("Metadata", {
-            "fields": ("created_at", "updated_at"),
-            "classes": ("collapse",)
-        }),
+        ("Basic Information", {"fields": ("name", "slug", "is_active")}),
+        (
+            "Metadata",
+            {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
+        ),
     )
     list_per_page = 25
-    
+
     def profile_count(self, obj):
         """Display number of profiles in this tenant"""
         if obj.pk:
             return obj.profiles.count()
         return 0
+
     profile_count.short_description = "Users"
-    
+
     def has_add_permission(self, request):
         """Allow superusers to always add tenants"""
         return request.user.is_superuser
-    
+
     def has_change_permission(self, request, obj=None):
         """Allow superusers to always change tenants"""
         return request.user.is_superuser
-    
+
     def has_delete_permission(self, request, obj=None):
         """Allow superusers to always delete tenants"""
         return request.user.is_superuser
-    
+
     def has_view_permission(self, request, obj=None):
         """Allow superusers to always view tenants"""
         return request.user.is_superuser
-    
+
     def save_model(self, request, obj, form, change):
         """Save tenant - superadmins can always create tenants"""
         # Tenants are global entities, not tenant-scoped, so RLS allows all access
@@ -63,7 +62,7 @@ class ProfileInline(admin.StackedInline):
 
 class UserAdmin(BaseUserAdmin):
     inlines = [ProfileInline]
-    
+
     def get_inline_instances(self, request, obj=None):
         if not obj:
             return []
