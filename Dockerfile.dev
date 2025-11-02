@@ -1,0 +1,54 @@
+# Development Dockerfile with hot-reload support
+FROM python:3.13  
+
+# The installer requires curl (and certificates) to download the release archive
+# Also install PostgreSQL client tools for pg_isready
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download the latest installer
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+# Run the installer then remove it
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+# Ensure the installed binary is on the `PATH`
+ENV PATH="/root/.local/bin/:$PATH"
+
+# Create the app directory  
+RUN mkdir -p /app
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Set environment variables for development
+# Prevents Python from writing pyc files to disk
+ENV PYTHONDONTWRITEBYTECODE=1
+# Prevents Python from buffering stdout and stderr (important for seeing logs immediately)
+ENV PYTHONUNBUFFERED=1
+# Enable Django's auto-reload (runserver does this by default, but explicit for clarity)
+ENV DJANGO_SETTINGS_MODULE=estimaite.settings
+
+# Copy only dependency files first (for better caching)
+COPY pyproject.toml /app/
+
+# Install dependencies (will be synced with volume mount in dev)
+RUN uv sync
+
+# Copy the entrypoint script (code will be mounted via volume in docker-compose)
+COPY entrypoint.sh /app/
+RUN chmod +x /app/entrypoint.sh
+
+# Expose the Django port
+EXPOSE 8008
+
+# Set default server to runserver (which has built-in auto-reload)
+ENV SERVER=runserver
+ENV DJANGO_PORT=8008
+
+# Use entrypoint script as the entry point
+ENTRYPOINT ["/app/entrypoint.sh"]
+
