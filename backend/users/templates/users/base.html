@@ -168,6 +168,7 @@
             <div class="navbar-menu">
                 {% if user.is_authenticated %}
                     <div class="navbar-links">
+                        <a href="{% url 'projects:project_list' %}">Projects</a>
                         <a href="{% url 'users:profile' %}">My Profile</a>
                         {% if user.profile.tenant %}
                         <span class="user-info">{{ user.profile.tenant.name }}</span>

@@ -1,0 +1,177 @@
+{% extends "users/base.html" %}
+
+{% block title %}Projects - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Projects</h1>
+        <a href="{% url 'projects:project_create' %}" class="btn btn-primary">Create New Project</a>
+    </div>
+
+    {% if projects %}
+    <div class="project-grid">
+        {% for project in projects %}
+        <div class="card">
+            <div class="card-header">
+                <h3><a href="{% url 'projects:project_detail' project.pk %}">{{ project.name }}</a></h3>
+                {% if not project.is_active %}
+                <span class="badge badge-warning">Inactive</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if project.description %}
+                <p class="text-muted">{{ project.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="project-meta">
+                    <span><strong>{{ project.feature_count }}</strong> features</span>
+                    <span class="text-muted">Created {{ project.created_at|date:"M d, Y" }}</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'projects:project_detail' project.pk %}" class="btn btn-sm btn-outline">View</a>
+                <a href="{% url 'projects:project_update' project.pk %}" class="btn btn-sm btn-outline">Edit</a>
+                <a href="{% url 'projects:project_delete' project.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h2>No projects yet</h2>
+        <p>Create your first project to get started!</p>
+        <a href="{% url 'projects:project_create' %}" class="btn btn-primary">Create Project</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.card-header h3 a {
+    color: #333;
+    text-decoration: none;
+}
+
+.card-header h3 a:hover {
+    color: #667eea;
+}
+
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.card-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    gap: 10px;
+}
+
+.project-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state h2 {
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.empty-state p {
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+</style>
+{% endblock %}
+

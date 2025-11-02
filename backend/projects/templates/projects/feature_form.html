@@ -1,0 +1,175 @@
+{% extends "users/base.html" %}
+
+{% block title %}{{ action }} Feature - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1>{{ action }} Feature</h1>
+        {% if project %}
+        <p class="info">Adding feature to: <strong>{{ project.name }}</strong></p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.project.id_for_label }}">{{ form.project.label }}</label>
+                {{ form.project }}
+                {% if form.project.errors %}
+                <div class="error">{{ form.project.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.parent.id_for_label }}">{{ form.parent.label }}</label>
+                {{ form.parent }}
+                <small class="form-text">Optional: Select a parent feature for hierarchical organization</small>
+                {% if form.parent.errors %}
+                <div class="error">{{ form.parent.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.feature_type.id_for_label }}">{{ form.feature_type.label }}</label>
+                {{ form.feature_type }}
+                {% if form.feature_type.errors %}
+                <div class="error">{{ form.feature_type.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="error">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="error">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>
+                    {{ form.priority }}
+                    {% if form.priority.errors %}
+                    <div class="error">{{ form.priority.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                    <div class="error">{{ form.status.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{{ action }}</button>
+                <a href="{% if feature %}{% url 'projects:feature_detail' feature.pk %}{% elif project %}{% url 'projects:project_detail' project.pk %}{% else %}{% url 'projects:feature_list' %}{% endif %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h1 {
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.info {
+    background: #e7f3ff;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    color: #004085;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group .form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+@media (max-width: 600px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+

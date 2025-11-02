@@ -8,6 +8,28 @@ elif [[ -d "./backend" ]]; then
   cd ./backend
 fi
 
+# Ensure virtual environment exists and is valid
+cd /app
+if [[ ! -d "/app/.venv" ]] || [[ ! -f "/app/.venv/bin/python" ]]; then
+  echo "📦 Creating virtual environment"
+  # Remove invalid .venv if it exists
+  if [[ -d "/app/.venv" ]]; then
+    rm -rf /app/.venv
+  fi
+  uv venv /app/.venv
+fi
+
+# Sync dependencies to ensure everything is up to date
+echo "📦 Syncing dependencies"
+uv sync
+
+# Change back to backend directory if needed
+if [[ -d "/app/backend" ]]; then
+  cd /app/backend
+elif [[ -d "./backend" ]]; then
+  cd ./backend
+fi
+
 # Wait for PostgreSQL to be ready
 echo "⏳ Waiting for Postgres at ${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}…"
 until pg_isready -q -h "${POSTGRES_HOST:-localhost}" -p "${POSTGRES_PORT:-5432}" -U "${POSTGRES_USER:-postgres}"; do

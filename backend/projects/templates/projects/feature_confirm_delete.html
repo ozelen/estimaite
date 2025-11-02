@@ -1,0 +1,89 @@
+{% extends "users/base.html" %}
+
+{% block title %}Delete Feature - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1>Delete Feature</h1>
+
+        <p>Are you sure you want to delete the feature <strong>"{{ feature.title }}"</strong>?</p>
+        <p class="warning">This action cannot be undone. All child features, requirements, and quality attributes associated with this feature will also be deleted.</p>
+
+        <div class="feature-info">
+            <p><strong>Project:</strong> {{ feature.project.name }}</p>
+            <p><strong>Type:</strong> {{ feature.get_feature_type_display }}</p>
+            {% if feature.children.exists %}
+            <p class="warning-text"><strong>Warning:</strong> This feature has {{ feature.children.count }} child feature(s) that will also be deleted.</p>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a href="{% url 'projects:feature_detail' feature.pk %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h1 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #dc3545;
+}
+
+.form-container p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.warning {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    font-weight: 500;
+}
+
+.feature-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.feature-info p {
+    margin: 5px 0;
+}
+
+.warning-text {
+    color: #856404;
+    font-weight: 500;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+</style>
+{% endblock %}
+
