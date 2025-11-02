@@ -1,0 +1,161 @@
+{% extends 'users/base.html' %}
+
+{% block title %}My Profile - Estimaite{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    
+    .profile-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-bottom: 30px;
+    }
+    
+    .profile-header {
+        border-bottom: 2px solid #e1e5e9;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .profile-header h1 {
+        color: #333;
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+    
+    .profile-section {
+        margin-bottom: 30px;
+    }
+    
+    .profile-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .profile-section h2 {
+        color: #667eea;
+        font-size: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e1e5e9;
+    }
+    
+    .info-row {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #666;
+            width: 220px;
+            flex-shrink: 0;
+    }
+    
+    .info-value {
+        color: #333;
+        flex: 1;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h1>My Profile</h1>
+        </div>
+        
+        <div class="profile-section">
+            <h2>User Information</h2>
+            <div class="info-row">
+                <span class="info-label">Username:</span>
+                <span class="info-value">{{ user.username }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ user.email }}</span>
+            </div>
+            {% if profile.phone_number %}
+            <div class="info-row">
+                <span class="info-label">Phone Number:</span>
+                <span class="info-value">{{ profile.phone_number }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span class="info-label">Member Since:</span>
+                <span class="info-value">{{ user.date_joined|date:"F d, Y" }}</span>
+            </div>
+        </div>
+        
+        <div class="profile-section">
+            <h2>Organization</h2>
+            <div class="info-row">
+                <span class="info-label">Organization Name:</span>
+                <span class="info-value">{{ tenant.name }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Organization Slug:</span>
+                <span class="info-value">{{ tenant.slug }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status:</span>
+                <span class="info-value">
+                    {% if tenant.is_active %}
+                        <span class="status-badge status-active">Active</span>
+                    {% else %}
+                        <span class="status-badge status-inactive">Inactive</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Created:</span>
+                <span class="info-value">{{ tenant.created_at|date:"F d, Y" }}</span>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            {% if user.is_superuser %}
+            <a href="{% url 'admin:index' %}" class="btn btn-primary">Go to Admin</a>
+            {% endif %}
+            <a href="{% url 'users:home' %}" class="btn btn-outline">Back to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

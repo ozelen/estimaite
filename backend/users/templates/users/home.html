@@ -1,0 +1,191 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Home - Estimaite{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 20px;
+        text-align: center;
+    }
+    
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+    
+    .hero p {
+        font-size: 20px;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .hero .btn {
+        padding: 14px 32px;
+        font-size: 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .hero .btn-white {
+        background: white;
+        color: #667eea;
+    }
+    
+    .hero .btn-white:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .hero .btn-outline-white {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+    
+    .hero .btn-outline-white:hover {
+        background: white;
+        color: #667eea;
+    }
+    
+    .features {
+        max-width: 1200px;
+        margin: 80px auto;
+        padding: 0 20px;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+    
+    .feature-icon {
+        font-size: 40px;
+        margin-bottom: 15px;
+    }
+    
+    .feature-card h3 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+    
+    .feature-card p {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: 36px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    
+    .section-subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to Estimaite</h1>
+        <p>Multi-tenant application platform with Row Level Security</p>
+        {% if not user.is_authenticated %}
+        <div class="hero-buttons">
+            <a href="{% url 'users:signup' %}" class="btn btn-white">Get Started</a>
+            <a href="{% url 'users:login' %}" class="btn btn-outline-white">Log In</a>
+        </div>
+        {% else %}
+        <div class="hero-buttons">
+            <a href="{% url 'users:profile' %}" class="btn btn-white">View Profile</a>
+            {% if user.is_superuser %}
+            <a href="{% url 'admin:index' %}" class="btn btn-outline-white">Go to Admin</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="features">
+    <h2 class="section-title">Features</h2>
+    <p class="section-subtitle">Everything you need to manage your organization efficiently</p>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🏢</div>
+            <h3>Multi-Tenant Architecture</h3>
+            <p>Each organization has its own isolated workspace with secure data separation using PostgreSQL Row Level Security.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Secure by Default</h3>
+            <p>Built-in security features including RLS policies that ensure data isolation at the database level.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>User Management</h3>
+            <p>Easy user and organization management with comprehensive admin interface and profile management.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Fast & Reliable</h3>
+            <p>Built with Django and PostgreSQL for performance and reliability you can count on.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Easy Setup</h3>
+            <p>Quick signup process that creates your account and organization in one simple step.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Admin Dashboard</h3>
+            <p>Powerful admin interface for managing users, tenants, and all your application data.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

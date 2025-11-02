@@ -1,0 +1,160 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Login - Estimaite{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 450px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .auth-header h1 {
+        color: #333;
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+    
+    .auth-header p {
+        color: #666;
+        font-size: 14px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        color: #333;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e1e5e9;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .help-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 4px;
+    }
+    
+    .errorlist {
+        list-style: none;
+        color: #dc3545;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+    
+    .errorlist li {
+        margin-bottom: 4px;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .auth-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Log in to your account</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.help_text %}
+                <span class="help-text">{{ form.username.help_text }}</span>
+                {% endif %}
+                {{ form.username.errors }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {% if form.password.help_text %}
+                <span class="help-text">{{ form.password.help_text }}</span>
+                {% endif %}
+                {{ form.password.errors }}
+            </div>
+            
+            {% if form.non_field_errors %}
+            <div class="form-group">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="btn-submit">Log In</button>
+        </form>
+        
+        <div class="auth-footer">
+            Don't have an account? <a href="{% url 'users:signup' %}">Sign up</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
