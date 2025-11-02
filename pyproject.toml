@@ -25,3 +25,10 @@ test = [
 [tool.isort]
 profile = "black"
 skip_glob = ["*/migrations/*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "estimaite.test_settings"
+python_files = ["tests.py", "test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--reuse-db --nomigrations"

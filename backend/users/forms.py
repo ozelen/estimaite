@@ -84,11 +84,13 @@ class SignupForm(UserCreationForm):
 
             slug = slugify(organization_name)
 
-        # Check if slug already exists
-        if slug and Tenant.objects.filter(slug=slug).exists():
-            raise forms.ValidationError(
-                f"An organization with slug '{slug}' already exists. Please choose a different one."
-            )
+        # Handle slug collisions by appending numbers (same logic as in save())
+        if slug:
+            base_slug = slug
+            counter = 1
+            while Tenant.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
 
         return slug
 
@@ -100,20 +102,9 @@ class SignupForm(UserCreationForm):
             user.save()
 
             # Create tenant/organization
+            # Slug is already validated and made unique in clean_organization_slug()
             organization_name = self.cleaned_data["organization_name"]
             organization_slug = self.cleaned_data["organization_slug"]
-
-            if not organization_slug:
-                from django.utils.text import slugify
-
-                organization_slug = slugify(organization_name)
-
-            # Ensure slug is unique
-            base_slug = organization_slug
-            counter = 1
-            while Tenant.objects.filter(slug=organization_slug).exists():
-                organization_slug = f"{base_slug}-{counter}"
-                counter += 1
 
             tenant = Tenant.objects.create(
                 name=organization_name, slug=organization_slug, is_active=True

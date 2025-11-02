@@ -37,3 +37,7 @@ DEBUG = False
 SECRET_KEY = "test-secret-key-not-for-production"
 
 ALLOWED_HOSTS = ["*"]
+
+# Authentication
+LOGIN_URL = "users:login"
+LOGIN_REDIRECT_URL = "users:profile"
