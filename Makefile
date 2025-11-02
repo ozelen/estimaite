@@ -1,4 +1,4 @@
-.PHONY: help install test test-fast test-local test-ci test-ci-fast lint format format-check security db-up migrate migrate-test makemigrations clean dev dev-docker shell superuser docker-build docker-up docker-down docker-logs docker-shell docker-migrate docker-makemigrations docker-superuser
+.PHONY: help install test test-fast test-local test-ci test-ci-fast lint format format-check security db-up migrate migrate-test makemigrations setup-rls clean dev dev-docker shell superuser create-tenant docker-build docker-up docker-down docker-logs docker-shell docker-migrate docker-makemigrations docker-setup-rls docker-superuser docker-create-tenant
 
 # Backend directory path
 BACKEND_DIR = backend
@@ -62,6 +62,9 @@ migrate-test: ## Run database migrations for tests
 makemigrations: ## Create database migrations
 	cd $(BACKEND_DIR) && uv run manage.py makemigrations
 
+setup-rls: ## Set up Row Level Security (RLS) policies for multitenancy
+	cd $(BACKEND_DIR) && uv run manage.py setup_rls
+
 clean: ## Clean up temporary files
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
@@ -105,11 +108,20 @@ docker-migrate: ## Run migrations in Docker container
 docker-makemigrations: ## Create migrations in Docker container
 	docker-compose exec backend uv run manage.py makemigrations
 
+docker-setup-rls: ## Set up RLS policies in Docker container
+	docker-compose exec backend uv run manage.py setup_rls
+
 docker-superuser: ## Create superuser in Docker container
 	docker-compose exec backend uv run manage.py createsuperuser
+
+docker-create-tenant: ## Create a tenant in Docker container (usage: make docker-create-tenant NAME="My Company")
+	docker-compose exec backend uv run manage.py create_tenant "$(NAME)" $(ARGS)
 
 shell: ## Start Django shell (local)
 	cd $(BACKEND_DIR) && uv run manage.py shell
 
 superuser: ## Create superuser (local)
 	cd $(BACKEND_DIR) && uv run manage.py createsuperuser
+
+create-tenant: ## Create a tenant (local, usage: make create-tenant NAME="My Company")
+	cd $(BACKEND_DIR) && uv run manage.py create_tenant "$(NAME)" $(ARGS)
